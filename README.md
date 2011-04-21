@@ -36,4 +36,4 @@ Example:
             pass
     
     #print sample stream
-    api.get(tw.STREAM_SAMPLE, 'GET', print_tweet)
+    api.stream(tw.STREAM_SAMPLE, 'GET', print_tweet)
