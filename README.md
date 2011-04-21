@@ -2,6 +2,7 @@ Tiny Twitter API Wrapper
 ===
 
 Example:
+
     import tinytwitter as tw
     
     consumer_key = 'your-consumer-key'
