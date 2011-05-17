@@ -24,8 +24,8 @@ STATUSES_ID_RETWEETED_BY_IDS = 'http://api.twitter.com/1/statuses/%d/retweeted_b
 
 #user resouces
 USERS_SHOW = 'http://api.twitter.com/1/users/show.json'
-USERS_LOOLUP = 'http://api.twitter.com/1/users/lookup.json'
-USERS_SEACH = 'http://api.twitter.com/1/users/search.json'
+USERS_LOOKUP = 'http://api.twitter.com/1/users/lookup.json'
+USERS_SEARCH = 'http://api.twitter.com/1/users/search.json'
 USERS_SUGGESTIONS = 'http://api.twitter.com/1/users/suggestions.json'
 USERS_SUGGESTIONS_TWITTER ='http://api.twitter.com/1/users/suggestions/twitter.json'
 USERS_PROFILE_IMAGE_TWITTER = 'http://api.twitter.com/1/users/profile_image/twitter.json'
