@@ -68,8 +68,8 @@ class OAuth(Auth):
         return request
 
 class Api(object):
-    def __init__(self, auth, convert_to_dict=True):
-        self._auth = auth
+    def __init__(self, auth=None, convert_to_dict=True):
+        self._auth = auth or NoAuth()
         self.convert = CONVERT if convert_to_dict else NOT_CONVERT
     
     def raw_response(self, url, method, **params):
