@@ -5,6 +5,7 @@ import time
 import urllib
 import urllib2
 import base64
+import json
 
 class TwitterError(Exception):
     pass
@@ -72,6 +73,17 @@ class Api(object):
         self._auth = auth or NoAuth()
         self.convert = CONVERT if convert_to_dict else NOT_CONVERT
     
+    def __getattr__(self, name):
+        try:
+            return self.__getattribute__(name)
+        except AttributeError:
+            def fn(method, **params):
+                url = 'http://api.twitter.com/1/' + name.replace('__','/') + '.json'
+                print url
+                return self.fetch(url, method, **params)
+            self.__dict__[name] = fn
+            return self.__dict__[name]
+
     def raw_response(self, url, method, **params):
         return urllib2.urlopen(self._auth.generate_request(url, method, params))
     
