@@ -5,7 +5,13 @@ import time
 import urllib
 import urllib2
 import base64
-import json
+try:
+    import json
+except:
+    import simplejson as json
+
+from method_missing import MethodMissing
+
 
 class TwitterError(Exception):
     pass
@@ -68,21 +74,25 @@ class OAuth(Auth):
         request.add_header('Authorization', oauth_request.to_header()['Authorization'])
         return request
 
-class Api(object):
+class Api(MethodMissing):
     def __init__(self, auth=None, convert_to_dict=True):
         self._auth = auth or NoAuth()
         self.convert = CONVERT if convert_to_dict else NOT_CONVERT
     
-    def __getattr__(self, name):
-        try:
-            return self.__getattribute__(name)
-        except AttributeError:
-            def fn(method, **params):
-                url = 'http://api.twitter.com/1/' + name.replace('__','/') + '.json'
-                print url
-                return self.fetch(url, method, **params)
-            self.__dict__[name] = fn
-            return self.__dict__[name]
+    def method_missing(self, name, *args, **kw):
+	if 'POST' in args:
+	    method = 'POST'
+	elif 'PUT' in args:
+	    method = 'PUT'
+        elif 'DELETE' in args:
+	    method = 'DELETE'
+	elif kw.has_key('method'):
+	    method = kw['method']
+	    del kw['method']
+	else:
+	    method = 'GET'
+	url = 'http://api.twitter.com/1/' + name.replace('__','/') + '.json'
+	return self.fetch(url, method, **kw)
 
     def raw_response(self, url, method, **params):
         return urllib2.urlopen(self._auth.generate_request(url, method, params))
