@@ -10,6 +10,7 @@ try:
 except:
     import simplejson as json
 
+from urls import *
 from method_missing import MethodMissing
 
 
@@ -18,6 +19,7 @@ class TwitterError(Exception):
 
 CONVERT = lambda x: json.loads(x)
 NOT_CONVERT = lambda x: x
+REQUEST_METHODS = set(['GET', 'POST', 'PUT', 'DELETE'])
 
 class Auth(object):
     def generate_request(self, url, method, params):
@@ -28,12 +30,8 @@ class Auth(object):
             request = urllib2.Request('%s?%s' % (url, urllib.urlencode(params)))
         else:
             request = urllib2.Request(url, data=urllib.urlencode(params))
-            if method == 'POST':
-                pass
-            elif method == 'PUT':
-                request.get_method = lambda: 'PUT'
-            elif method == 'DELETE':
-                request.get_method = lambda: 'DELETE'
+            if method in REQUEST_METHODS:
+                request.get_method = lambda: method
             else:
                 raise TwitterError('There is not the method called %s' % method)
         return request
@@ -80,12 +78,15 @@ class Api(MethodMissing):
         self.convert = CONVERT if convert_to_dict else NOT_CONVERT
     
     def method_missing(self, name, *args, **kw):
+        if name.endswith('stream'):
+	    url = 'http://stream.twitter.com/1/statuses/' + name.split('_')[0] + '.json'
+	    return self.stream(url, 'GET', **kw)
 	if 'POST' in args:
 	    method = 'POST'
 	elif 'PUT' in args:
 	    method = 'PUT'
         elif 'DELETE' in args:
-	    method = 'DELETE'
+            method = 'DELETE'
 	elif kw.has_key('method'):
 	    method = kw['method']
 	    del kw['method']
@@ -112,7 +113,11 @@ class Api(MethodMissing):
     def delete(self, url, **params):
         return self.fetch(url, 'DELETE', **params)
     
-    def stream(self, url, method, fn, **params):
+    def stream(self, url, method, **params):
         res = self.raw_response(url, method, **params)
         for line in res:
-            fn(self.convert(line))
+            yield self.convert(line)
+    
+    def user_stream(self, **params):
+        return self.stream(STREAM_USER, 'GET', **params)
+    

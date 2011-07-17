@@ -29,11 +29,36 @@ Example:
     #delete a list
     api.delete(tw.USER_LISTS_ID % (status['user']['screen_name'], list['id']))
     
-    def print_tweet(tweet):
+    for tweet in api.stream(tw.STREAM_SAMPLE, 'GET'):
         try:
             print tweet['text']
         except:
             pass
+
+Examle 2:
+
+    #post a new tweet
+    status = api.statuses__update('POST', status='message')
+
+    #show home timeline
+    for tweet in api.statuses__public_timeline():
+        print tweet['text']
     
+    #delete a tweet
+    getattr(api, 'statuses__destroy__%s' % status['id'])('DELETE')
+
+    #create a new list
+    list = api.foouser__lists('POST', name='foo')
+
+    #delete a list
+    getattr(api, 'foouser__lists__%s' % list['id'])('DELETE')
+
     #print sample stream
-    api.stream(tw.STREAM_SAMPLE, 'GET', print_tweet)
+    for tweet in api.sample_stream():
+        try:
+            print tweet['text']
+        except:
+            pass
+
+
+
