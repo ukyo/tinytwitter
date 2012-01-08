@@ -79,7 +79,7 @@ class Api(MethodMissing):
     
     def method_missing(self, name, *args, **kw):
         if name.endswith('stream'):
-	    url = 'http://stream.twitter.com/1/statuses/' + name.split('_')[0] + '.json'
+	    url = 'https://stream.twitter.com/1/statuses/' + name.split('_')[0] + '.json'
 	    return self.stream(url, 'GET', **kw)
 	if 'POST' in args:
 	    method = 'POST'
@@ -92,7 +92,7 @@ class Api(MethodMissing):
 	    del kw['method']
 	else:
 	    method = 'GET'
-	url = 'http://api.twitter.com/1/' + name.replace('__','/') + '.json'
+	url = 'https://api.twitter.com/1/' + name.replace('__','/') + '.json'
 	return self.fetch(url, method, **kw)
 
     def raw_response(self, url, method, **params):
